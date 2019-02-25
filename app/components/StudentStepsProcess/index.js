@@ -7,15 +7,24 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
-import { Steps, Modal, Row, Col, Spin, Button } from 'antd';
+import {
+  Steps,
+  Modal,
+  Row,
+  Col,
+  Spin,
+  Button
+} from 'antd';
 import axios from 'axios';
 import ImageCorrect from 'images/1.svg';
 import ImageError from 'images/2.svg';
 import ImageSteps from 'images/3.svg';
 
-const { Step } = Steps;
+const {
+  Step
+} = Steps;
 
-const Image = styled.img`
+const Image = styled.img `
   height: 100%;
   width: 100%;
   padding: 10px;
@@ -56,7 +65,9 @@ class ValidateStepsProcess extends React.PureComponent {
 
   initProcess = async () => {
     await this.reset();
-    await this.setState({ loading: true });
+    await this.setState({
+      loading: true
+    });
     try {
       const student = await this.createStudentParticipant();
       await this.incrementStep();
@@ -67,12 +78,18 @@ class ValidateStepsProcess extends React.PureComponent {
 
       await this.sendInvitation(base64File, student);
 
-      await this.setState({ status: 'finish' });
+      await this.setState({
+        status: 'finish'
+      });
     } catch (error) {
-      await this.setState({ status: 'error' });
+      await this.setState({
+        status: 'error'
+      });
       console.log(error);
     }
-    await this.setState({ loading: false });
+    await this.setState({
+      loading: false
+    });
   };
 
   base64Encode = file =>
@@ -89,14 +106,22 @@ class ValidateStepsProcess extends React.PureComponent {
     });
 
   incrementStep = async () => {
-    await this.setState(prevState => ({ current: prevState.current + 1 }));
+    await this.setState(prevState => ({
+      current: prevState.current + 1
+    }));
   };
 
   wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
   createStudentParticipant = () => {
-    this.setState({ studentStatus: 'process' });
-    const { firstName, lastName, email } = this.props;
+    this.setState({
+      studentStatus: 'process'
+    });
+    const {
+      firstName,
+      lastName,
+      email
+    } = this.props;
     return new Promise((resolve, reject) => {
       axios
         .post('http://localhost:3002/api/Student', {
@@ -107,45 +132,60 @@ class ValidateStepsProcess extends React.PureComponent {
           email,
         })
         .then(response => {
-          this.setState({ studentStatus: 'finish' });
+          this.setState({
+            studentStatus: 'finish'
+          });
           resolve(response.data);
         })
         .catch(err => {
-          this.setState({ studentStatus: 'error' });
+          this.setState({
+            studentStatus: 'error'
+          });
           reject(err);
         });
     });
   };
 
   issueIdentity = student => {
-    this.setState({ identityStatus: 'process' });
+    this.setState({
+      identityStatus: 'process'
+    });
     return new Promise((resolve, reject) => {
       axios
         .post(
-          'http://localhost:3002/api/system/identities/issue',
-          {
+          'http://localhost:3002/api/system/identities/issue', {
             participant: `org.example.mynetwork.Student#${student.studentId}`,
             userID: student.studentId,
             options: {},
-          },
-          {
+          }, {
             responseType: 'blob',
           },
         )
         .then(response => {
-          this.setState({ identityStatus: 'finish' });
+          this.setState({
+            identityStatus: 'finish'
+          });
           resolve(response.data);
         })
         .catch(err => {
-          this.setState({ identityStatus: 'error' });
+          this.setState({
+            identityStatus: 'error'
+          });
           reject(err);
         });
     });
   };
 
   sendInvitation = (base64File, student) => {
-    this.setState({ emailStatus: 'process' });
-    const { studentId, email, firstName, lastName } = student;
+    this.setState({
+      emailStatus: 'process'
+    });
+    const {
+      studentId,
+      email,
+      firstName,
+      lastName
+    } = student;
     return new Promise((resolve, reject) => {
       axios
         .post('http://localhost:4000/api/v1/invitation', {
@@ -158,18 +198,24 @@ class ValidateStepsProcess extends React.PureComponent {
           studentId,
         })
         .then(response => {
-          this.setState({ emailStatus: 'finish' });
+          this.setState({
+            emailStatus: 'finish'
+          });
           resolve(response.data);
         })
         .catch(err => {
-          this.setState({ emailStatus: 'error' });
+          this.setState({
+            emailStatus: 'error'
+          });
           reject(err);
         });
     });
   };
 
   renderImageStatus = () => {
-    const { status } = this.state;
+    const {
+      status
+    } = this.state;
     let imageSrc;
 
     switch (status) {
@@ -183,25 +229,36 @@ class ValidateStepsProcess extends React.PureComponent {
         imageSrc = ImageError;
     }
 
-    return <Image src={imageSrc} alt="Image Process" />;
+    return <Image src = {
+      imageSrc
+    }
+    alt = "Image Process" / > ;
   };
 
   renderModalButton = () => {
-    const { loading, status } = this.state;
+    const {
+      loading,
+      status
+    } = this.state;
 
     const text = status !== 'process' ? 'Finalizar' : 'Iniciar proceso';
     const onClickFunction =
       status !== 'process' ? this.closeModal : this.initProcess;
 
-    return [
-      <Button
-        key="submit"
-        type="primary"
-        loading={loading}
-        onClick={onClickFunction}
-      >
-        {text}
-      </Button>,
+    return [ <
+      Button
+      key = "submit"
+      type = "primary"
+      loading = {
+        loading
+      }
+      onClick = {
+        onClickFunction
+      } >
+      {
+        text
+      } <
+      /Button>,
     ];
   };
 
@@ -214,51 +271,80 @@ class ValidateStepsProcess extends React.PureComponent {
       emailStatus,
     } = this.state;
 
-    const { visible } = this.props;
+    const {
+      visible
+    } = this.props;
 
-    return (
-      <Modal
-        title="Invitación estudiante"
-        centered
-        visible={visible}
-        maskClosable={false}
-        width={800}
-        footer={this.renderModalButton()}
-        onCancel={this.closeModal}
+    return ( <
+      Modal title = "Invitación estudiante"
+      centered visible = {
+        visible
+      }
+      maskClosable = {
+        false
+      }
+      width = {
+        800
+      }
+      footer = {
+        this.renderModalButton()
+      }
+      onCancel = {
+        this.closeModal
+      } >
+      <
+      Row type = "flex"
+      justify = "center"
+      align = "middle" >
+      <
+      Col span = {
+        12
+      }
+      style = {
+        {
+          display: 'flex',
+          alignItems: 'center',
+          textAlign: 'center',
+          justifyContent: 'center',
+        }
+      } >
+      {!loading ? this.renderImageStatus() : < Spin size = "large" / >
+      } <
+      /Col> <
+      Col span = {
+        12
+      } >
+      <
+      Steps current = {
+        current
+      }
+      direction = "vertical" >
+      <
+      Step status = {
+        studentStatus
+      }
+      title = "Crear Estudiante en el blockchain"
+      description = "Un estudiante es un participante del blockchain" /
       >
-        <Row type="flex" justify="center" align="middle">
-          <Col
-            span={12}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              textAlign: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            {!loading ? this.renderImageStatus() : <Spin size="large" />}
-          </Col>
-          <Col span={12}>
-            <Steps current={current} direction="vertical">
-              <Step
-                status={studentStatus}
-                title="Crear Estudiante en el blockchain"
-                description="Un estudiante es un participante del blockchain"
-              />
-              <Step
-                status={identityStatus}
-                title="Expedir una nueva identidad"
-                description="Una identidad le permite a un usuario interactuar con el blockchain"
-              />
-              <Step
-                status={emailStatus}
-                title="Enviar correo al estudiante"
-                description="Se envia correo con un adjunto al correo del estudiante"
-              />
-            </Steps>
-          </Col>
-        </Row>
-      </Modal>
+      <
+      Step status = {
+        identityStatus
+      }
+      title = "Expedir una nueva identidad"
+      description = "Una identidad le permite a un usuario interactuar con el blockchain" /
+      >
+      <
+      Step status = {
+        emailStatus
+      }
+      title = "Enviar correo al estudiante"
+      description = "Se envia correo con un adjunto al correo del estudiante" /
+      >
+      <
+      /Steps> <
+      /Col> <
+      /Row> <
+      /Modal>
     );
   }
 }

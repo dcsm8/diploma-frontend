@@ -17,7 +17,7 @@ import ImageError from 'images/2.svg';
 import ImageSteps from 'images/3.svg';
 import Anchor from 'grommet/components/Anchor';
 
-const ipfsApi = ipfsAPI('localhost', '5001');
+const ipfsApi = ipfsAPI('localhost', '5002');
 
 const { Step } = Steps;
 
@@ -68,7 +68,9 @@ class CertificateStepsProcess extends React.PureComponent {
 
   initProcess = async () => {
     await this.reset();
-    await this.setState({ loading: true });
+    await this.setState({
+      loading: true,
+    });
     try {
       await this.incrementStep();
       const certificateBlob = await this.signDocument();
@@ -79,23 +81,33 @@ class CertificateStepsProcess extends React.PureComponent {
       await this.incrementStep();
       await this.sendEmail();
       await this.incrementStep();
-      await this.setState({ status: 'finish' });
+      await this.setState({
+        status: 'finish',
+      });
     } catch (error) {
-      await this.setState({ status: 'error' });
+      await this.setState({
+        status: 'error',
+      });
       console.log(error);
     }
-    await this.setState({ loading: false });
+    await this.setState({
+      loading: false,
+    });
   };
 
   incrementStep = async () => {
-    await this.setState(prevState => ({ current: prevState.current + 1 }));
+    await this.setState(prevState => ({
+      current: prevState.current + 1,
+    }));
   };
 
   wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
   signDocument = async () => {
     const { dateIssued, student, program } = this.props;
-    this.setState({ signatureStatus: 'process' });
+    this.setState({
+      signatureStatus: 'process',
+    });
     return new Promise((resolve, reject) => {
       axios
         .post('http://localhost:4000/api/v1/signature', {
@@ -106,11 +118,15 @@ class CertificateStepsProcess extends React.PureComponent {
         .then(response => {
           const { data } = response;
           const blob = this.base64ToBlob(data.document);
-          this.setState({ signatureStatus: 'finish' });
+          this.setState({
+            signatureStatus: 'finish',
+          });
           resolve(blob);
         })
         .catch(err => {
-          this.setState({ signatureStatus: 'error' });
+          this.setState({
+            signatureStatus: 'error',
+          });
           reject(err);
         });
     });
@@ -124,7 +140,9 @@ class CertificateStepsProcess extends React.PureComponent {
   createDiplomaAsset = ipfsHash => {
     const { dateIssued, student, program } = this.props;
     const date = moment(dateIssued, 'DD MMMM YYYY').format();
-    this.setState({ transactionStatus: 'process' });
+    this.setState({
+      transactionStatus: 'process',
+    });
     return new Promise((resolve, reject) => {
       axios
         .post('http://localhost:3002/api/Diploma', {
@@ -138,32 +156,45 @@ class CertificateStepsProcess extends React.PureComponent {
           program: `resource:org.example.mynetwork.Program#${program.value}`,
         })
         .then(response => {
-          this.setState({ transactionStatus: 'finish' });
+          this.setState({
+            transactionStatus: 'finish',
+          });
           resolve(response);
         })
         .catch(err => {
-          this.setState({ transactionStatus: 'error' });
+          this.setState({
+            transactionStatus: 'error',
+          });
           reject(err);
         });
     });
   };
 
   uploadFileToIPFS = async file => {
-    this.setState({ ipfsStatus: 'process' });
+    this.setState({
+      ipfsStatus: 'process',
+    });
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         console.log(reader);
         const buffer = Buffer.from(reader.result);
         ipfsApi
-          .add(buffer, { progress: prog => console.log(`received: ${prog}`) })
+          .add(buffer, {
+            progress: prog => console.log(`received: ${prog}`),
+          })
           .then(response => {
             const ipfsId = response[0].hash;
-            this.setState({ ipfsStatus: 'finish', ipfsHash: ipfsId });
+            this.setState({
+              ipfsStatus: 'finish',
+              ipfsHash: ipfsId,
+            });
             resolve(ipfsId);
           })
           .catch(err => {
-            this.setState({ ipfsStatus: 'error' });
+            this.setState({
+              ipfsStatus: 'error',
+            });
             reject(err);
           });
       };
@@ -172,7 +203,9 @@ class CertificateStepsProcess extends React.PureComponent {
   };
 
   sendEmail = () => {
-    this.setState({ emailStatus: 'process' });
+    this.setState({
+      emailStatus: 'process',
+    });
     return new Promise((resolve, reject) => {
       axios
         .post('http://localhost:4000/api/v1/communicate', {
@@ -183,11 +216,15 @@ class CertificateStepsProcess extends React.PureComponent {
           },
         })
         .then(response => {
-          this.setState({ emailStatus: 'finish' });
+          this.setState({
+            emailStatus: 'finish',
+          });
           resolve(response);
         })
         .catch(err => {
-          this.setState({ emailStatus: 'error' });
+          this.setState({
+            emailStatus: 'error',
+          });
           reject(err);
         });
     });
@@ -244,7 +281,7 @@ class CertificateStepsProcess extends React.PureComponent {
 
     const { visible } = this.props;
 
-    const ipfsLink = `https://ipfs.io/ipfs/${ipfsHash}`;
+    const ipfsLink = `http://localhost:5002/ipfs/${ipfsHash}`;
 
     const showLink = ipfsHash && status === 'finish';
 

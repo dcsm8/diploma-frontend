@@ -12,6 +12,7 @@ import Menu from 'grommet/components/Menu';
 import Anchor from 'grommet/components/Anchor';
 import ActionsBase from 'grommet/components/icons/base/Actions';
 import styled from 'styled-components';
+import { Link } from 'react-router-dom';
 
 const HeaderMenu = styled(HeaderBase)`
   background-color: #552eff;
@@ -32,14 +33,25 @@ const Actions = styled(ActionsBase)`
 function Header() {
   return (
     <HeaderMenu float={false} fixed={false}>
-      <Title>Certificados Universidad Distrital</Title>
+      <Title> Certificados Universidad Distrital </Title>
       <Box flex justify="end" direction="row" responsive={false}>
-        <Menu icon={<Actions />} dropAlign={{ right: 'right' }}>
-          <Anchor href="#" className="active">
-            First
-          </Anchor>
-          <Anchor href="#">Second</Anchor>
-          <Anchor href="#">Third</Anchor>
+        <Menu
+          icon={<Actions />}
+          dropAlign={{
+            right: 'right',
+          }}
+        >
+          <Link to="/">
+            <Anchor>Inicio</Anchor>
+          </Link>
+
+          <Link to="/certificate">
+            <Anchor>Certificado</Anchor>
+          </Link>
+
+          <Link to="/student">
+            <Anchor>Estudiante</Anchor>
+          </Link>
         </Menu>
       </Box>
     </HeaderMenu>
